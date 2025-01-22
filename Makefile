@@ -1,13 +1,30 @@
+# Compiler and flags
 CC = clang++
 CXX_FLAGS = -Wall -Wextra -std=c++17
 FMT_FLAGS = -lfmt
 
-SRC_FILES = ./src/main.cc
+# Directories
+SRC_DIR = ./src
+BUILD_DIR = ./build
 
+# Source and output files
+SRC_FILE = $(SRC_DIR)/main.cc
+TARGET = $(BUILD_DIR)/todocxx
+
+# Phony targets
+.PHONY: all clean ensure_dir
+
+# Default target
+all: ensure_dir $(TARGET)
+
+# Ensure build directory exists
 ensure_dir:
-	@if [ ! -d "./build" ]; then \
-		mkdir build; \
-	fi \
+	@mkdir -p $(BUILD_DIR)
 
-build: ensure_dir
-	@$(CC) $(CXX_FLAGS) $(FMT_FLAGS) $(SRC_FILES) -o build/todocxx
+# Build the target
+$(TARGET): $(SRC_FILE)
+	@$(CC) $(CXX_FLAGS) $(FMT_FLAGS) $< -o $@
+
+# Clean up build artifacts
+clean:
+	@rm -rf $(BUILD_DIR)
