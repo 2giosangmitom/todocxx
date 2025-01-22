@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = clang++
-CXX_FLAGS = -Wall -Wextra -std=c++17
+CXX_FLAGS = -Wall -Wextra -std=c++17 -O2
 FMT_FLAGS = -lfmt
 
 # Directories
