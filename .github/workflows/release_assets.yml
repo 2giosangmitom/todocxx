@@ -1,4 +1,4 @@
-name: Build release assets for Linux
+name: Release Assets
 
 on:
   push:
@@ -10,8 +10,10 @@ permissions:
 
 jobs:
   build:
-    name: Build and upload release assets for linux
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
@@ -29,10 +31,12 @@ jobs:
       - name: Create release asset
         run: |
           cd build
-          tar -czf todocxx-linux.tar.gz todocxx
+          OS_NAME=$([[ "${{ matrix.os }}" == "ubuntu-latest" ]] && echo "linux" || echo "macos")
+          tar -czf todocxx-${OS_NAME}.tar.gz todocxx
+          mv todocxx-${OS_NAME}.tar.gz ../
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            ./build/todocxx-linux.tar.gz
+            ./todocxx-*.tar.gz

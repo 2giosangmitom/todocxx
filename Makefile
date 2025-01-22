@@ -1,7 +1,8 @@
 # Compiler and flags
 CC = clang++
 CXX_FLAGS = -Wall -Wextra -std=c++17 -O2
-FMT_FLAGS = -lfmt
+FMT_FLAGS = -lfmt -I$(LIB_FMT)/include
+CXXOPTS_FLAGS = -I$(LIB_CXXOPTS)/include
 
 # Directories
 SRC_DIR = ./src
@@ -23,7 +24,7 @@ ensure_dir:
 
 # Build the target
 $(TARGET): $(SRC_FILE)
-	@$(CC) $(CXX_FLAGS) $(FMT_FLAGS) $< -o $@
+	@$(CC) $(CXX_FLAGS) $(FMT_FLAGS) $(CXXOPTS_FLAGS) $< -o $@
 
 install:
 	@cp build/todocxx ~/.local/bin/

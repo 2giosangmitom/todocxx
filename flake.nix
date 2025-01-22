@@ -8,7 +8,12 @@
     self,
     nixpkgs,
   }: let
-    systems = ["x86_64-linux" "aarch64-linux"];
+    systems = [
+      "aarch64-linux"
+      "aarch64-darwin"
+      "x86_64-darwin"
+      "x86_64-linux"
+    ];
 
     forAllSystems = f:
       nixpkgs.lib.genAttrs systems (system: let
@@ -19,11 +24,17 @@
     devShells = forAllSystems (pkgs: system: {
       default = pkgs.mkShellNoCC {
         buildInputs = with pkgs; [
-            clang
-            gnumake
-            fmt_11
-            cxxopts
+          clang
+          gnumake
+          fmt_11
+          cxxopts
+          bear
         ];
+        shellHook = ''
+          export SHELL=${pkgs.bashInteractive}
+          export LIB_FMT=${pkgs.fmt_11.dev}
+          export LIB_CXXOPTS=${pkgs.cxxopts}
+        '';
       };
     });
     formatter = forAllSystems (pkgs: system: pkgs.alejandra);
