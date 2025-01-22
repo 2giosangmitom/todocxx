@@ -61,6 +61,15 @@ class Storage {
     file << title << "|" << priority << std::endl;
   }
 
+  void write_todos(std::list<Todo> &new_todos) {
+    file.close();
+    file.open(file_path, std::ios::out | std::ios::trunc);
+
+    for (const Todo &t : new_todos) {
+      add_todo(t.title, t.priority);
+    }
+  }
+
   ~Storage() {
     if (file.is_open()) {
       file.close();

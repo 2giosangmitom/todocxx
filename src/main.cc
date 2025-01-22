@@ -1,6 +1,7 @@
 #include <fmt/color.h>
 #include <fmt/core.h>
 
+#include <cstdint>
 #include <cxxopts.hpp>
 #include <list>
 #include <optional>
@@ -112,7 +113,17 @@ int main(int argc, char *argv[]) {
     }
 
     if (result.count("delete")) {
-      // TODO: handle delete todos
+      std::vector<uint32_t> ids = result["delete"].as<std::vector<uint32_t>>();
+
+      Storage file(data_path);
+      std::list<Todo> todos = file.read_todos();
+
+      for (const uint32_t &id : ids) {
+        todos.remove_if([id](const Todo &t) { return t.id == id; });
+      }
+
+      file.write_todos(todos);
+      return 0;
     }
 
     if (result.count("update")) {
