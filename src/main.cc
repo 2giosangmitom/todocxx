@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "cli/table.hpp"
-#include "io/csv.hpp"
+#include "io/storage.hpp"
 #include "utils/fmt.hpp"
 
 // Check platform
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (result.count("list")) {
-      Csv file(data_path);
+      Storage file(data_path);
       std::list<Todo> content = file.read_content();
 
       if (content.empty()) {

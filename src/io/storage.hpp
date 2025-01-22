@@ -1,5 +1,5 @@
-#ifndef CSV_HPP
-#define CSV_HPP
+#ifndef STORAGE_HPP
+#define STORAGE_HPP
 
 #include <fmt/core.h>
 
@@ -11,13 +11,13 @@
 #include "../cli/todo.hpp"
 #include "../utils/fmt.hpp"
 
-class Csv {
+class Storage {
  private:
   std::fstream file;
   std::string file_path;
 
  public:
-  Csv(const std::string &path) : file_path{path} {
+  Storage(const std::string &path) : file_path{path} {
     // Open the file for reading and writing, create it if it doesn't exist
     file.open(file_path, std::ios::in | std::ios::out | std::ios::app);
 
@@ -54,11 +54,11 @@ class Csv {
     return res;
   }
 
-  ~Csv() {
+  ~Storage() {
     if (file.is_open()) {
       file.close();
     }
   }
 };
 
-#endif  // CSV_HPP
+#endif  // STORAGE_HPP
