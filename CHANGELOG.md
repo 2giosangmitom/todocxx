@@ -2,7 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.2-alpha.1] - 2025-01-22
+
+### 💼 Other
+
+- V0.0.2-alpha.1
+
+### ⚙️ Miscellaneous Tasks
+
+- Don't move assets to root
+- Use flakehub-cache-action instead of magic-nix-cache-action
+- Add build release assets for windows
+
 ## [0.0.2-alpha] - 2025-01-22
+
+### 💼 Other
+
+- Release 0.0.2-alpha
 
 ### ⚙️ Miscellaneous Tasks
 

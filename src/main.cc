@@ -56,7 +56,7 @@ std::optional<std::string> get_home_directory() {
 }
 
 int main(int argc, char *argv[]) {
-  const std::string app_version = "0.0.1-alpha";
+  const std::string app_version = "0.0.2-alpha.1";
   const std::string app_name = "todocxx";
   const std::string app_desc =
       "A blazing-fast CLI tool to efficiently manage your todos directly from "

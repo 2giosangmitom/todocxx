@@ -9,10 +9,11 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-linux-macos:
+    name: Build for Linux and macOS
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -20,37 +21,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Nix
-        if: matrix.os != 'windows-latest'
         uses: DeterminateSystems/nix-installer-action@main
 
-      - name: Config Nix cache
-        if: matrix.os != 'windows-latest'
+      - name: Configure Nix cache
         uses: DeterminateSystems/flakehub-cache-action@main
 
       - name: Build the project
         run: |
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then \
-            mkdir build; \
-            vcpkg install fmt cxxopts; \
-            clang++ -Wall -Wextra -O2 -lfmt -std=c++17 src\main.cc -o build\todocxx.exe; \
-          else \
-            nix develop --command make; \
-          fi
+          nix develop --command make
 
       - name: Create release asset
         run: |
           cd build
           if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then \
             OS_NAME="linux"; \
-          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then \
-            OS_NAME="macos"; \
           else \
-            OS_NAME="windows"; \
+            OS_NAME="macos"; \
           fi
           tar -czf todocxx-${OS_NAME}.tar.gz todocxx
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            ./build/todocxx-*.tar.gz
+          files: ./build/todocxx-*.tar.gz
