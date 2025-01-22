@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.2-alpha] - 2025-01-22
+
+### ⚙️ Miscellaneous Tasks
+
+- Add build release assets for macos
+
 ## [0.0.1-alpha] - 2025-01-22
 
 ### 🚀 Features
