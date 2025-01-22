@@ -11,4 +11,10 @@ inline void print_error(const std::string_view &message) {
                message);
 }
 
+// Print info message
+inline void print_info(const std::string_view &message) {
+  fmt::println("{}: {}", fmt::styled("[INFO]", fmt::fg(fmt::color::cyan)),
+               message);
+}
+
 #endif

@@ -138,8 +138,8 @@ int main(int argc, char *argv[]) {
       // TODO: handle delete todos
     }
   } catch (const cxxopts::exceptions::exception &e) {
-    print_error(fmt::format("Error parsing options: {}", e.what()));
-    print_error("Use '--help' for more information.");
+    print_error(e.what());
+    print_info("Use '--help' for more information");
     return 1;
   }
 
