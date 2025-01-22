@@ -25,6 +25,9 @@ ensure_dir:
 $(TARGET): $(SRC_FILE)
 	@$(CC) $(CXX_FLAGS) $(FMT_FLAGS) $< -o $@
 
+install:
+	@cp build/todocxx ~/.local/bin/
+
 # Clean up build artifacts
 clean:
 	@rm -rf $(BUILD_DIR)
