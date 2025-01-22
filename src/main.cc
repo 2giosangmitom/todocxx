@@ -9,6 +9,7 @@
 
 #include "cli/table.hpp"
 #include "io/csv.hpp"
+#include "utils/fmt.hpp"
 
 // Check platform
 #if defined(_WIN32)
@@ -27,13 +28,6 @@ std::optional<std::string> get_home_directory() {
   const char *home =
       std::getenv(std::string(PLATFORM) == "windows" ? "USERPROFILE" : "HOME");
   return home ? std::optional<std::string>(home) : std::nullopt;
-}
-
-// Print error message
-void print_error(const std::string_view &message) {
-  fmt::println(stderr, "{}: {}",
-               fmt::styled("[ERROR]", fmt::fg(fmt::color::light_coral)),
-               message);
 }
 
 int main(int argc, char *argv[]) {
@@ -107,6 +101,18 @@ int main(int argc, char *argv[]) {
     }
 
     if (result.count("delete")) {
+      // TODO: handle delete todos
+    }
+
+    if (result.count("update")) {
+      // TODO: handle delete todos
+    }
+
+    if (result.count("filter")) {
+      // TODO: handle delete todos
+    }
+
+    if (result.count("search")) {
       // TODO: handle delete todos
     }
   } catch (const cxxopts::exceptions::exception &e) {

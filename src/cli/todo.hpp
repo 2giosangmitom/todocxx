@@ -1,14 +1,13 @@
 #ifndef TODO_HPP
 #define TODO_HPP
 
-#include <sys/types.h>
-
+#include <cstdint>
 #include <string>
 
 struct Todo {
-  u_int32_t id;
+  uint32_t id;
   std::string title;
-  u_int8_t priority;
+  uint8_t priority;
 };
 
 #endif  // !TODO_HPP
