@@ -7,7 +7,7 @@
 struct Todo {
   uint32_t id;
   std::string title;
-  uint8_t priority;
+  uint32_t priority;
 };
 
 #endif  // !TODO_HPP

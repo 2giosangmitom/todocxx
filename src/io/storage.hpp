@@ -26,7 +26,7 @@ class Storage {
     }
   }
 
-  std::list<Todo> read_content() {
+  std::list<Todo> read_todos() {
     std::string line;
     std::list<Todo> res;
 
@@ -38,20 +38,27 @@ class Storage {
     while (getline(file, line)) {
       if (line.empty()) continue;  // Skip empty lines
 
-      uint8_t priority = line.back() - '0';
+      uint32_t priority = line.back() - '0';
       std::string title = line.substr(0, line.size() - 2);
 
       // Validate priority
       if (priority < 1 || priority > 3) {
-        fmt::println("Invalid priority value: {}", priority);
         priority = 0;  // Set to 0 for unknown
       }
 
-      Todo t{uint8_t(res.size() + 1), title, priority};
+      Todo t{uint32_t(res.size() + 1), title, priority};
       res.push_back(t);
     }
 
     return res;
+  }
+
+  void add_todo(const std::string &title, const uint32_t &priority) {
+    if (!file.is_open()) {
+      print_error("File is not open for appending: " + file_path);
+      return;
+    }
+    file << title << "|" << priority << std::endl;
   }
 
   ~Storage() {

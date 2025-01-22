@@ -43,12 +43,12 @@ int main(int argc, char *argv[]) {
   // clang-format off
   options.add_options()
       ("a,add", "Add a new todo with a title", cxxopts::value<std::string>(), "<TITLE>")
-      ("u,update", "Update a todo by ID", cxxopts::value<unsigned int>(), "<TODO_ID>")
-      ("d,delete", "Delete todos by ID(s) (e.g., 1,2,3)", cxxopts::value<std::vector<unsigned int>>(), "<TODO_ID(s)>")
+      ("u,update", "Update a todo by ID", cxxopts::value<uint32_t>(), "<TODO_ID>")
+      ("d,delete", "Delete todos by ID(s) (e.g., 1,2,3)", cxxopts::value<std::vector<uint32_t>>(), "<TODO_ID(s)>")
       ("l,list", "List all todos")
       ("t,title", "Set the title for add or update queries", cxxopts::value<std::string>(), "<TITLE>")
-      ("p,priority", "Set priority (1: Low, 2: Medium, 3: High) for add or update queries", cxxopts::value<unsigned int>(), "<PRIORITY>")
-      ("f,filter", "Filter todos by priorities for list queries (e.g., 1,2)", cxxopts::value<std::vector<unsigned int>>(), "<PRIORITIES>")
+      ("p,priority", "Set priority (1: Low, 2: Medium, 3: High) for add or update queries", cxxopts::value<uint32_t>(), "<PRIORITY>")
+      ("f,filter", "Filter todos by priorities for list queries (e.g., 1,2)", cxxopts::value<std::vector<uint32_t>>(), "<PRIORITIES>")
       ("s,search", "Search todos by words", cxxopts::value<std::string>(), "<WORDS>")
       ("v,version", "Show todocxx version")
       ("h,help", "Print help message");
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 
     if (result.count("list")) {
       Storage file(data_path);
-      std::list<Todo> content = file.read_content();
+      std::list<Todo> content = file.read_todos();
 
       if (content.empty()) {
         fmt::print(fmt::emphasis::bold, "No data\n");
@@ -97,7 +97,18 @@ int main(int argc, char *argv[]) {
     }
 
     if (result.count("add")) {
-      // TODO: handle add todo
+      if (!result.count("priority")) {
+        print_error("You must provide a priority with --priority");
+        return 1;
+      }
+
+      uint32_t priority = result["priority"].as<uint32_t>();
+      std::string title = result["add"].as<std::string>();
+
+      Storage file(data_path);
+      file.add_todo(title, priority);
+
+      return 0;
     }
 
     if (result.count("delete")) {
