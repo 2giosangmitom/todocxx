@@ -1,0 +1,38 @@
+name: Build release assets for Linux
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and upload release assets for linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Config Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Build the project
+        run: nix develop --command make
+
+      - name: Create release asset
+        run: |
+          cd build
+          tar -czf todocxx-linux.tar.gz todocxx
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./build/todocxx-linux.tar.gz
