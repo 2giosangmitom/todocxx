@@ -44,18 +44,23 @@ inline void print_border(const std::array<size_t, 3> &col_wids) {
 
 inline void print_row(const Todo &todo, const std::array<size_t, 3> &col_wids) {
   std::string priority;
+  fmt::color priority_color;
 
   switch (todo.priority) {
     case 1:
       priority = "Low";
+      priority_color = fmt::color::light_green;
       break;
     case 2:
       priority = "Medium";
+      priority_color = fmt::color::yellow;
       break;
     case 3:
       priority = "High";
+      priority_color = fmt::color::coral;
       break;
     default:
+      priority_color = fmt::color::aquamarine;
       priority = "Unknown";  // Handle unexpected priorities
       break;
   }
@@ -64,7 +69,8 @@ inline void print_row(const Todo &todo, const std::array<size_t, 3> &col_wids) {
       "| {}{} | {}{} | {}{} |", todo.id,
       std::string(col_wids[0] - 2 - std::to_string(todo.id).size(), ' '),
       todo.title, std::string(col_wids[1] - 2 - todo.title.size(), ' '),
-      priority, std::string(col_wids[2] - 2 - priority.size(), ' '));
+      fmt::styled(priority, fmt::fg(priority_color)),
+      std::string(col_wids[2] - 2 - priority.size(), ' '));
 }
 
 inline void print_table(const std::list<Todo> &content) {
