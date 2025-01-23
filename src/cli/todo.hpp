@@ -32,6 +32,8 @@ struct Todo {
   uint32_t id;
   std::string title;
   uint32_t priority;
+  Todo(uint32_t id, std::string title, uint32_t priority)
+      : id{id}, title{title}, priority{priority} {};
 };
 
 #endif  // !TODO_HPP

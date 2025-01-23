@@ -29,6 +29,7 @@
 #include <cxxopts.hpp>
 #include <list>
 #include <optional>
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -190,7 +191,31 @@ int main(int argc, char *argv[]) {
     }
 
     if (result.count("search")) {
-      // TODO: handle delete todos
+      std::string pattern = result["search"].as<std::string>();
+
+      // Trim spaces from the pattern
+      pattern.erase(0, pattern.find_first_not_of(" "));
+      pattern.erase(pattern.find_last_not_of(" ") + 1);
+
+      pattern = std::regex_replace(pattern, std::regex(R"([.^$|()\\[*+?{}])"),
+                                   R"(\$&)");
+
+      if (pattern.empty()) {
+        print_error("Search pattern is empty!");
+        return 1;
+      }
+
+      Storage file(data_path);
+      std::list<Todo> todos = file.read_todos();
+
+      std::regex regex_pattern(pattern, std::regex_constants::icase);
+
+      todos.remove_if([&regex_pattern](const Todo &t) {
+        return !std::regex_search(t.title, regex_pattern);
+      });
+
+      print_table(todos);
+      return 0;
     }
   } catch (const cxxopts::exceptions::exception &e) {
     print_error(e.what());
