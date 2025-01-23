@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2025-01-23
+
+### 🚀 Features
+
+- Implement update
+- Implement --filter
+- Implement search
+- Add colors based on priority
+
+### 🐛 Bug Fixes
+
+- *(table)* Correct center column width
+
+### 💼 Other
+
+- Use mkShell
+- Link fmt library statically
+
+### 📚 Documentation
+
+- Update README
+
 ## [0.0.2-alpha.1] - 2025-01-22
 
 ### 💼 Other
