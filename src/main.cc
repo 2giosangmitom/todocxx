@@ -151,7 +151,27 @@ int main(int argc, char *argv[]) {
     }
 
     if (result.count("update")) {
-      // TODO: handle delete todos
+      if (!result.count("title")) {
+        print_error("You must provide a title with --title");
+        return 1;
+      }
+
+      Storage file(data_path);
+      std::string title = result["title"].as<std::string>();
+      uint32_t id = result["update"].as<uint32_t>();
+      std::list<Todo> todos = file.read_todos();
+
+      for (Todo &t : todos) {
+        if (t.id == id) {
+          t.title = title;
+          if (result.count("priority")) {
+            t.priority = result["priority"].as<uint32_t>();
+          }
+        }
+      }
+
+      file.write_todos(todos);
+      return 0;
     }
 
     if (result.count("filter")) {
