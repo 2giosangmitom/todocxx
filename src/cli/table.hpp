@@ -69,14 +69,13 @@ inline void print_row(const Todo &todo, const std::array<size_t, 3> &col_wids) {
 
 inline void print_table(const std::list<Todo> &content) {
   const size_t fcol_wid = std::max(content.size() + 2, static_cast<size_t>(4));
-  size_t crcol_wid = 0;
+  size_t crcol_wid = 7;
   const size_t lcol_wid = 10;
 
   // Calculate the maximum width for the title column
   for (const auto &todo : content) {
     crcol_wid = std::max(todo.title.size() + 2, crcol_wid);
   }
-  crcol_wid = std::max(crcol_wid, static_cast<size_t>(5));
 
   std::array<size_t, 3> col_wids = {fcol_wid, crcol_wid, lcol_wid};
 
