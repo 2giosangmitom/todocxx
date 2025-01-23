@@ -175,7 +175,18 @@ int main(int argc, char *argv[]) {
     }
 
     if (result.count("filter")) {
-      // TODO: handle delete todos
+      std::vector<uint32_t> priorities =
+          result["filter"].as<std::vector<uint32_t>>();
+
+      Storage file(data_path);
+      std::list<Todo> todos = file.read_todos();
+
+      for (uint32_t p : priorities) {
+        todos.remove_if([p](const Todo &t) { return p != t.priority; });
+      }
+
+      print_table(todos);
+      return 0;
     }
 
     if (result.count("search")) {
