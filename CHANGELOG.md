@@ -2,11 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2025-01-23
+
+### 🐛 Bug Fixes
+
+- Correct filter algorithm
+
 ## [1.0.1] - 2025-01-23
 
 ### 🐛 Bug Fixes
 
 - *(table)* Correct first column width
+
+### 💼 Other
+
+- V1.0.1
 
 ### 📚 Documentation
 
