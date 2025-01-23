@@ -1,6 +1,6 @@
 # 📝 todocxx
 
-**todocxx** is a blazing-fast, terminal-based TODO application written in C++. Designed with simplicity and performance in mind, it empowers developers and terminal enthusiasts to efficiently manage their tasks through a clean and intuitive command-line interface.
+**todocxx** is a blazing-fast, terminal-based TODO application written in C++. Designed with simplicity and performance in mind, it empowers developers and terminal enthusiasts to efficiently manage their tasks through a clean and intuitive command-line interface. Thank [roadmap.sh](https://roadmap.sh/projects/task-tracker) for idea.
 
 ![preview](./preview.png)
 
