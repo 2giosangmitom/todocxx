@@ -22,7 +22,7 @@
         f pkgs system);
   in {
     devShells = forAllSystems (pkgs: system: {
-      default = pkgs.mkShellNoCC {
+      default = pkgs.mkShell {
         buildInputs = with pkgs; [
           clang
           gnumake
