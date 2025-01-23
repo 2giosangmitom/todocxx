@@ -181,12 +181,17 @@ int main(int argc, char *argv[]) {
 
       Storage file(data_path);
       std::list<Todo> todos = file.read_todos();
+      std::list<Todo> tts;
 
-      for (uint32_t p : priorities) {
-        todos.remove_if([p](const Todo &t) { return p != t.priority; });
+      for (auto &t : todos) {
+        for (uint32_t p : priorities) {
+          if (t.priority == p) {
+            tts.insert(tts.end(), t);
+          }
+        }
       }
 
-      print_table(todos);
+      print_table(tts);
       return 0;
     }
 
