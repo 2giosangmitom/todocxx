@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2025-01-23
+
+### 🐛 Bug Fixes
+
+- *(table)* Correct first column width
+
+### 📚 Documentation
+
+- Add preview
+- Update README
+
 ## [1.0.0] - 2025-01-23
 
 ### 🚀 Features
@@ -19,6 +30,7 @@ All notable changes to this project will be documented in this file.
 
 - Use mkShell
 - Link fmt library statically
+- V1.0.0
 
 ### 📚 Documentation
 
