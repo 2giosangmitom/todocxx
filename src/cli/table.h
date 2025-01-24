@@ -33,17 +33,20 @@
 #include <list>
 #include <string>
 
-#include "../cli/todo.hpp"
+#include "../model.h"
 
-inline void print_border(const std::array<size_t, 3> &col_wids) {
-  for (const auto &wid : col_wids) {
+constexpr size_t kDefaultTitleWidth = 7;
+constexpr size_t kPriorityWidth = 10;
+
+inline void print_border(const std::array<size_t, 3>& col_wids) {
+  for (const auto& wid : col_wids) {
     fmt::print("+{}", std::string(wid, '-'));
   }
   fmt::println("+");
 }
 
-inline void print_row(const Todo &todo, const std::array<size_t, 3> &col_wids) {
-  std::string priority;
+inline void print_row(const Todo& todo, const std::array<size_t, 3>& col_wids) {
+  std::string_view priority;
   fmt::color priority_color;
 
   switch (todo.priority) {
@@ -60,8 +63,8 @@ inline void print_row(const Todo &todo, const std::array<size_t, 3> &col_wids) {
       priority_color = fmt::color::coral;
       break;
     default:
-      priority_color = fmt::color::aquamarine;
       priority = "Unknown";  // Handle unexpected priorities
+      priority_color = fmt::color::aquamarine;
       break;
   }
 
@@ -73,18 +76,17 @@ inline void print_row(const Todo &todo, const std::array<size_t, 3> &col_wids) {
       std::string(col_wids[2] - 2 - priority.size(), ' '));
 }
 
-inline void print_table(const std::list<Todo> &content) {
+inline void print_table(const std::list<Todo>& content) {
   const size_t fcol_wid = std::max(std::to_string(content.size()).size() + 2,
                                    static_cast<size_t>(4));
-  size_t crcol_wid = 7;
-  const size_t lcol_wid = 10;
+  size_t crcol_wid = kDefaultTitleWidth;
 
   // Calculate the maximum width for the title column
-  for (const auto &todo : content) {
+  for (const auto& todo : content) {
     crcol_wid = std::max(todo.title.size() + 2, crcol_wid);
   }
 
-  std::array<size_t, 3> col_wids = {fcol_wid, crcol_wid, lcol_wid};
+  std::array<size_t, 3> col_wids = {fcol_wid, crcol_wid, kPriorityWidth};
 
   print_border(col_wids);
 
@@ -93,11 +95,11 @@ inline void print_table(const std::list<Todo> &content) {
       fmt::styled("ID", fmt::emphasis::bold | fmt::emphasis::underline),
       std::string(fcol_wid - 4, ' '),
       fmt::styled("Title", fmt::emphasis::bold | fmt::emphasis::underline),
-      std::string(crcol_wid - 7, ' '),
+      std::string(crcol_wid - kDefaultTitleWidth, ' '),
       fmt::styled("Priority", fmt::emphasis::bold | fmt::emphasis::underline));
   print_border(col_wids);
 
-  for (const auto &todo : content) {
+  for (const auto& todo : content) {
     print_row(todo, col_wids);
   }
 

@@ -30,73 +30,71 @@
 #include <cstdint>
 #include <fstream>
 #include <list>
+#include <sstream>
 #include <string>
 
-#include "../cli/todo.hpp"
-#include "../utils/fmt.hpp"
+#include "../model.h"
+#include "../utils/fmt.h"
 
 class Storage {
  private:
-  std::fstream file;
   std::string file_path;
 
  public:
-  Storage(const std::string &path) : file_path{path} {
-    // Open the file for reading and writing, create it if it doesn't exist
-    file.open(file_path, std::ios::in | std::ios::out | std::ios::app);
-
-    if (!file.is_open()) {
-      print_error("Failed to open file: " + file_path);
-    }
-  }
+  Storage(const std::string &path) : file_path{path} {}
 
   std::list<Todo> read_todos() {
+    std::ifstream file(file_path, std::ios::in | std::ios::binary);
     std::string line;
     std::list<Todo> res;
 
     if (!file.is_open()) {
-      print_error("File is not open for reading: " + file_path);
+      print_error("Failed to open file for reading: " + file_path);
       return res;  // Return empty list
     }
 
-    while (getline(file, line)) {
+    while (std::getline(file, line)) {
       if (line.empty()) continue;  // Skip empty lines
 
-      uint32_t priority = line.back() - '0';
-      std::string title = line.substr(0, line.size() - 2);
+      std::istringstream iss(line);
+      std::string title;
+      uint32_t priority;
 
-      // Validate priority
-      if (priority < 1 || priority > 3) {
-        priority = 0;  // Set to 0 for unknown
+      if (std::getline(iss, title, '|') && iss >> priority) {
+        if (priority < 1 || priority > 3) {
+          priority = 0;  // Set to 0 for unknown
+        }
+        Todo t{uint32_t(res.size() + 1), title, priority};
+        res.push_back(t);
       }
-
-      Todo t{uint32_t(res.size() + 1), title, priority};
-      res.push_back(t);
     }
 
     return res;
   }
 
   void add_todo(const std::string &title, const uint32_t &priority) {
+    std::ofstream file(file_path,
+                       std::ios::out | std::ios::app | std::ios::binary);
+
     if (!file.is_open()) {
-      print_error("File is not open for appending: " + file_path);
+      print_error("Failed to open file for appending: " + file_path);
       return;
     }
+
     file << title << "|" << priority << std::endl;
   }
 
-  void write_todos(std::list<Todo> &new_todos) {
-    file.close();
-    file.open(file_path, std::ios::out | std::ios::trunc);
+  void write_todos(const std::list<Todo> &new_todos) {
+    std::ofstream file(file_path,
+                       std::ios::out | std::ios::trunc | std::ios::binary);
+
+    if (!file.is_open()) {
+      print_error("Failed to open file for writing: " + file_path);
+      return;
+    }
 
     for (const Todo &t : new_todos) {
-      add_todo(t.title, t.priority);
-    }
-  }
-
-  ~Storage() {
-    if (file.is_open()) {
-      file.close();
+      file << t.title << "|" << t.priority << std::endl;
     }
   }
 };

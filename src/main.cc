@@ -33,9 +33,9 @@
 #include <string>
 #include <vector>
 
-#include "cli/table.hpp"
-#include "io/storage.hpp"
-#include "utils/fmt.hpp"
+#include "cli/table.h"
+#include "fs/storage.h"
+#include "utils/fmt.h"
 
 // Check platform
 #if defined(_WIN32)
@@ -51,12 +51,108 @@ enum class Priority { Low = 1, Medium, High };
 
 // Get the home directory or data file on windows
 std::optional<std::string> get_home_directory() {
-  const char *home =
+  const char* home =
       std::getenv(std::string(PLATFORM) == "windows" ? "USERPROFILE" : "HOME");
   return home ? std::optional<std::string>(home) : std::nullopt;
 }
 
-int main(int argc, char *argv[]) {
+void print_help(const cxxopts::Options& options) {
+  fmt::println("{}", options.help());
+}
+
+void print_version(const std::string& app_name,
+                   const std::string& app_version) {
+  fmt::println("{} version {}", app_name, app_version);
+}
+
+void list_todos(const std::string& data_path) {
+  Storage file(data_path);
+  std::list<Todo> content = file.read_todos();
+
+  if (content.empty()) {
+    fmt::print(fmt::emphasis::bold, "No data\n");
+  } else {
+    print_table(content);
+  }
+}
+
+void add_todo(const std::string& data_path, const std::string& title,
+              uint32_t priority) {
+  Storage file(data_path);
+  file.add_todo(title, priority);
+}
+
+void delete_todos(const std::string& data_path,
+                  const std::vector<uint32_t>& ids) {
+  Storage file(data_path);
+  std::list<Todo> todos = file.read_todos();
+
+  for (const uint32_t& id : ids) {
+    todos.remove_if([id](const Todo& t) { return t.id == id; });
+  }
+
+  file.write_todos(todos);
+}
+
+void update_todo(const std::string& data_path, uint32_t id,
+                 const std::string& title, std::optional<uint32_t> priority) {
+  Storage file(data_path);
+  std::list<Todo> todos = file.read_todos();
+
+  for (Todo& t : todos) {
+    if (t.id == id) {
+      t.title = title;
+      if (priority) {
+        t.priority = *priority;
+      }
+    }
+  }
+
+  file.write_todos(todos);
+}
+
+void filter_todos(const std::string& data_path,
+                  const std::vector<uint32_t>& priorities) {
+  Storage file(data_path);
+  std::list<Todo> todos = file.read_todos();
+  std::list<Todo> filtered_todos;
+
+  for (const auto& t : todos) {
+    if (std::find(priorities.begin(), priorities.end(), t.priority) !=
+        priorities.end()) {
+      filtered_todos.push_back(t);
+    }
+  }
+
+  print_table(filtered_todos);
+}
+
+void search_todos(const std::string& data_path, const std::string& pattern) {
+  std::string trimmed_pattern = pattern;
+  trimmed_pattern.erase(0, trimmed_pattern.find_first_not_of(" "));
+  trimmed_pattern.erase(trimmed_pattern.find_last_not_of(" ") + 1);
+
+  trimmed_pattern = std::regex_replace(
+      trimmed_pattern, std::regex(R"([.^$|()\\[*+?{}])"), R"(\$&)");
+
+  if (trimmed_pattern.empty()) {
+    print_error("Search pattern is empty!");
+    return;
+  }
+
+  Storage file(data_path);
+  std::list<Todo> todos = file.read_todos();
+
+  std::regex regex_pattern(trimmed_pattern, std::regex_constants::icase);
+
+  todos.remove_if([&regex_pattern](const Todo& t) {
+    return !std::regex_search(t.title, regex_pattern);
+  });
+
+  print_table(todos);
+}
+
+int main(int argc, char* argv[]) {
   const std::string app_version = "v1.0.2";
   const std::string app_name = "todocxx";
   const std::string app_desc =
@@ -86,39 +182,31 @@ int main(int argc, char *argv[]) {
   }
 
   // Get todo.txt path
-  char path_sep = (std::string(PLATFORM) == "windows") ? '\\' : '/';
-  auto home_dir = get_home_directory();
+  const char path_sep = (std::string(PLATFORM) == "windows") ? '\\' : '/';
+  const auto home_dir = get_home_directory();
 
   if (!home_dir) {
     print_error("Sorry, todocxx does not support your platform!");
     return 1;
   }
 
-  std::string data_path = *home_dir + path_sep + "todo.txt";
+  const std::string data_path = *home_dir + path_sep + "todo.txt";
 
   try {
-    auto result = options.parse(argc, argv);
+    const auto result = options.parse(argc, argv);
 
     if (result.count("help")) {
-      fmt::println("{}", options.help());
+      print_help(options);
       return 0;
     }
 
     if (result.count("version")) {
-      fmt::println("{} version {}", app_name, app_version);
+      print_version(app_name, app_version);
       return 0;
     }
 
     if (result.count("list")) {
-      Storage file(data_path);
-      std::list<Todo> content = file.read_todos();
-
-      if (content.empty()) {
-        fmt::print(fmt::emphasis::bold, "No data\n");
-      } else {
-        print_table(content);
-      }
-
+      list_todos(data_path);
       return 0;
     }
 
@@ -128,26 +216,16 @@ int main(int argc, char *argv[]) {
         return 1;
       }
 
-      uint32_t priority = result["priority"].as<uint32_t>();
-      std::string title = result["add"].as<std::string>();
+      const uint32_t priority = result["priority"].as<uint32_t>();
+      const std::string title = result["add"].as<std::string>();
 
-      Storage file(data_path);
-      file.add_todo(title, priority);
-
+      add_todo(data_path, title, priority);
       return 0;
     }
 
     if (result.count("delete")) {
-      std::vector<uint32_t> ids = result["delete"].as<std::vector<uint32_t>>();
-
-      Storage file(data_path);
-      std::list<Todo> todos = file.read_todos();
-
-      for (const uint32_t &id : ids) {
-        todos.remove_if([id](const Todo &t) { return t.id == id; });
-      }
-
-      file.write_todos(todos);
+      const auto ids = result["delete"].as<std::vector<uint32_t>>();
+      delete_todos(data_path, ids);
       return 0;
     }
 
@@ -157,72 +235,29 @@ int main(int argc, char *argv[]) {
         return 1;
       }
 
-      Storage file(data_path);
-      std::string title = result["title"].as<std::string>();
-      uint32_t id = result["update"].as<uint32_t>();
-      std::list<Todo> todos = file.read_todos();
+      const uint32_t id = result["update"].as<uint32_t>();
+      const std::string title = result["title"].as<std::string>();
+      const std::optional<uint32_t> priority =
+          result.count("priority")
+              ? std::optional<uint32_t>(result["priority"].as<uint32_t>())
+              : std::nullopt;
 
-      for (Todo &t : todos) {
-        if (t.id == id) {
-          t.title = title;
-          if (result.count("priority")) {
-            t.priority = result["priority"].as<uint32_t>();
-          }
-        }
-      }
-
-      file.write_todos(todos);
+      update_todo(data_path, id, title, priority);
       return 0;
     }
 
     if (result.count("filter")) {
-      std::vector<uint32_t> priorities =
-          result["filter"].as<std::vector<uint32_t>>();
-
-      Storage file(data_path);
-      std::list<Todo> todos = file.read_todos();
-      std::list<Todo> tts;
-
-      for (auto &t : todos) {
-        for (uint32_t p : priorities) {
-          if (t.priority == p) {
-            tts.insert(tts.end(), t);
-          }
-        }
-      }
-
-      print_table(tts);
+      const auto priorities = result["filter"].as<std::vector<uint32_t>>();
+      filter_todos(data_path, priorities);
       return 0;
     }
 
     if (result.count("search")) {
-      std::string pattern = result["search"].as<std::string>();
-
-      // Trim spaces from the pattern
-      pattern.erase(0, pattern.find_first_not_of(" "));
-      pattern.erase(pattern.find_last_not_of(" ") + 1);
-
-      pattern = std::regex_replace(pattern, std::regex(R"([.^$|()\\[*+?{}])"),
-                                   R"(\$&)");
-
-      if (pattern.empty()) {
-        print_error("Search pattern is empty!");
-        return 1;
-      }
-
-      Storage file(data_path);
-      std::list<Todo> todos = file.read_todos();
-
-      std::regex regex_pattern(pattern, std::regex_constants::icase);
-
-      todos.remove_if([&regex_pattern](const Todo &t) {
-        return !std::regex_search(t.title, regex_pattern);
-      });
-
-      print_table(todos);
+      const std::string pattern = result["search"].as<std::string>();
+      search_todos(data_path, pattern);
       return 0;
     }
-  } catch (const cxxopts::exceptions::exception &e) {
+  } catch (const cxxopts::exceptions::exception& e) {
     print_error(e.what());
     print_info("Use '--help' for more information");
     return 1;
