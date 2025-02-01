@@ -21,19 +21,3 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-#ifndef TODO_HPP
-#define TODO_HPP
-
-#include <cstdint>
-#include <string>
-
-struct Todo {
-  uint32_t id;
-  std::string title;
-  uint32_t priority;
-  Todo(uint32_t id, std::string title, uint32_t priority)
-      : id{id}, title{title}, priority{priority} {};
-};
-
-#endif  // !TODO_HPP

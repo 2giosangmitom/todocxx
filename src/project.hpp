@@ -21,3 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+#define PROJECT_VERSION "2.0.0"
+#define PROJECT_DESCRIPTION "A blazing-fast CLI tool to efficiently manage your todos directly from the terminal"

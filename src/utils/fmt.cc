@@ -21,3 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+#include "fmt.hpp"
+#include "colors.hpp"
+#include <iostream>
+using namespace std;
+
+// Print error message to stderr
+void print_err(const char *message) {
+  cerr << BOLD_TEXT RED_TEXT << "[ERROR]" << RESET << ": " << message;
+}

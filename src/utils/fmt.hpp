@@ -21,3 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+#ifndef FMT_H
+#define FMT_H
+
+// Print error message to stderr
+void print_err(const char *message);
+
+#endif
