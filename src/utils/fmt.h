@@ -22,23 +22,12 @@
  * SOFTWARE.
  */
 
-#ifndef COLOR_H
-#define COLOR_H
+#ifndef FMT_H
+#define FMT_H
 
-// Text colors
-#define RED_TEXT "\033[1;31m"
-#define GREEN_TEXT "\033[1;32m"
-#define YELLOW_TEXT "\033[1;33m"
-#define BLUE_TEXT "\033[1;34m"
-#define MAGENTA_TEXT "\033[1;35m"
-#define CYAN_TEXT "\033[1;36m"
-#define WHITE_TEXT "\033[1;37m"
+#include <string_view>
 
-// Text styles
-#define BOLD_TEXT "\033[1m"
-#define UNDERLINE_TEXT "\033[4m"
+// Print error message to stderr
+void print_err(std::string_view message);
 
-// Reset colors and styles
-#define RESET "\033[0m"
-
-#endif // COLOR_H
+#endif

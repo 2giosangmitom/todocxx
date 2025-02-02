@@ -7,7 +7,7 @@ project(
   VERSION 2.0.0
   DESCRIPTION "A blazing-fast CLI tool to efficiently manage your todos \
 directly from the terminal"
-  LANGUAGES CXX
+  LANGUAGES C
 )
 
 configure_file(
@@ -17,6 +17,8 @@ configure_file(
 
 add_executable(
   td
-  src/utils/fmt.cc
-  src/main.cc
+  src/utils/fmt.c
+  src/main.c
 )
+
+target_link_libraries(td PRIVATE ncurses tinfo)
