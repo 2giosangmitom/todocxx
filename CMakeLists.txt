@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(
   td
   VERSION 2.0.0
-  DESCRIPTION "A blazing-fast CLI tool to efficiently manage your todos \
+  DESCRIPTION "A blazing-fast CLI tool to efficiently manage your TODO.md \
 directly from the terminal"
   LANGUAGES C
 )
 
 configure_file(
-  "${CMAKE_SOURCE_DIR}/config/project.hpp.in"
-  "${CMAKE_SOURCE_DIR}/src/project.hpp"
+  "${CMAKE_SOURCE_DIR}/config/project.h.in"
+  "${CMAKE_SOURCE_DIR}/src/project.h"
 )
 
 add_executable(
@@ -20,5 +20,3 @@ add_executable(
   src/utils/fmt.c
   src/main.c
 )
-
-target_link_libraries(td PRIVATE ncurses tinfo)

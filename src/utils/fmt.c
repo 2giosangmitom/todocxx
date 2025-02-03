@@ -21,3 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+#include "fmt.h"
+#include <stdio.h>
+
+void print_err(const char *message) {
+  printf("%s: %s", COLOR_RED "[ERROR]" STYLE_RESET, message);
+}
