@@ -37,11 +37,14 @@ bool init(const char *file_path, const char *title) {
     return false;
   }
 
-  if (title) {
+  if (strlen(title) != 0) {
     fprintf(file,
             "<!-- Modify if you want to update ._. (Not implemented feature) "
             "-->\n# %s\n\n",
             title);
+  } else {
+    fprintf(file, "<!-- Modify if you want to update ._. (Not implemented "
+                  "feature) -->\n");
   }
 
   fclose(file);
