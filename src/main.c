@@ -25,10 +25,18 @@
 #include "project.h"
 #include "utils/fmt.h"
 #include <ncurses.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <uthash.h>
 
+typedef struct {
+  char *name; // key
+  char *value;
+  UT_hash_handle hh;
+} arg;
+
+// Print help message
 void print_help(char *name) {
   puts(PROJECT_DESCRIPTION "\n");
 
@@ -60,11 +68,90 @@ void print_help(char *name) {
   printf("  %-25s %s\n", "-v, --version", "Display the program version");
 }
 
+void add_argument(arg **arguments, char *name, char *value) {
+  arg *new_arg;
+
+  HASH_FIND_STR(*arguments, name, new_arg);
+
+  if (new_arg == NULL) {
+    new_arg = (arg *)malloc(sizeof(arg));
+    new_arg->name = name;
+    new_arg->value = value;
+    HASH_ADD_STR(*arguments, name, new_arg);
+  } else {
+    new_arg->value = value;
+  }
+}
+
+void hash_release(arg **arguments) {
+  if (arguments == NULL) {
+    return;
+  }
+
+  arg *current, *tmp;
+
+  HASH_ITER(hh, *arguments, current, tmp) {
+    HASH_DEL(*arguments, current);
+    free(current);
+  }
+}
+
 int main(int argc, char **argv) {
   if (argc <= 1) {
     print_err("Expect a command. See '--help' for details.");
     return EXIT_FAILURE;
   }
 
+  // Parse arguments
+  arg *arguments = NULL;
+
+  bool help = false;
+  bool version = false;
+  bool file = false;
+  bool list = false;
+  bool clear = false;
+
+  for (int i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
+      help = true;
+    } else if (strcmp(argv[i], "--version") == 0 ||
+               strcmp(argv[i], "-v") == 0) {
+      version = true;
+    } else if (strcmp(argv[i], "init") == 0 && i < argc - 1) {
+      i++; // Move to next arg
+      add_argument(&arguments, argv[i - 1], argv[i]);
+    } else if (strcmp(argv[i], "add") == 0 && i < argc - 1) {
+      i++; // Move to next arg
+      add_argument(&arguments, argv[i - 1], argv[i]);
+    } else if (strcmp(argv[i], "list") == 0) {
+      list = true;
+    } else if (strcmp(argv[i], "done") == 0 && i < argc - 1) {
+      i++; // Move to next arg
+      add_argument(&arguments, argv[i - 1], argv[i]);
+    } else if (strcmp(argv[i], "remove") == 0 && i < argc - 1) {
+      i++; // Move to next arg
+      add_argument(&arguments, argv[i - 1], argv[i]);
+    } else if (strcmp(argv[i], "clear") == 0) {
+      clear = true;
+    } else {
+      print_err("Invalid arguments. See '--help' for details.");
+      hash_release(&arguments);
+      return EXIT_FAILURE;
+    }
+  }
+
+  if (help) {
+    print_help(argv[0]);
+    hash_release(&arguments);
+    return EXIT_SUCCESS;
+  }
+
+  if (version) {
+    printf("%s version %s\n", argv[0], PROJECT_VERSION);
+    hash_release(&arguments);
+    return EXIT_SUCCESS;
+  }
+
+  hash_release(&arguments);
   return EXIT_SUCCESS;
 }
