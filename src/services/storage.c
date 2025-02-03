@@ -22,38 +22,25 @@
  * SOFTWARE.
  */
 
-#ifndef FMT_H
-#define FMT_H
+#include "storage.h"
+#include "../utils/fmt.h"
+#include <errno.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
 
-// Foreground colors
-#define COLOR_BLACK "\033[0;30m"
-#define COLOR_RED "\033[0;31m"
-#define COLOR_GREEN "\033[0;32m"
-#define COLOR_YELLOW "\033[0;33m"
-#define COLOR_BLUE "\033[0;34m"
-#define COLOR_MAGENTA "\033[0;35m"
-#define COLOR_CYAN "\033[0;36m"
-#define COLOR_WHITE "\033[0;37m"
+// Init the TODO.md or other name if user want ._.
+bool init(const char *file_path, const char *title) {
+  FILE *file = fopen(file_path, "w");
+  if (!file) {
+    print_err(strerror(errno));
+    return false;
+  }
 
-// Background colors
-#define BG_BLACK "\033[40m"
-#define BG_RED "\033[41m"
-#define BG_GREEN "\033[42m"
-#define BG_YELLOW "\033[43m"
-#define BG_BLUE "\033[44m"
-#define BG_MAGENTA "\033[45m"
-#define BG_CYAN "\033[46m"
-#define BG_WHITE "\033[47m"
+  if (title) {
+    fprintf(file, "# %s\n\n", title);
+  }
 
-// Text styles
-#define STYLE_BOLD "\033[1m"
-#define STYLE_UNDERLINE "\033[4m"
-#define STYLE_RESET "\033[0m" // Reset style and color
-
-// Print error message to stderr
-void print_err(const char *message);
-
-// Print info message
-void print_info(const char *format, ...);
-
-#endif
+  fclose(file);
+  return true;
+}

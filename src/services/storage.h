@@ -21,3 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+#ifndef STORAGE_H
+#define STORAGE_H
+
+#include <stdbool.h>
+#include <stdint.h>
+
+typedef struct {
+  uint32_t id;
+  char *content;
+  bool is_done;
+  char *added_date;
+} Todo;
+
+struct ListTodos {
+  Todo todo;
+  struct ListTodos *next;
+  struct ListTodos *prev;
+};
+
+// Init the TODO.md or other name if user want ._.
+bool init(const char *file_path, const char *title);
+
+#endif

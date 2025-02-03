@@ -18,5 +18,6 @@ configure_file(
 add_executable(
   td
   src/utils/fmt.c
+  src/services/storage.c
   src/main.c
 )

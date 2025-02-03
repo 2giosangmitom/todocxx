@@ -23,8 +23,22 @@
  */
 
 #include "fmt.h"
+#include <stdarg.h>
 #include <stdio.h>
 
+// Print error message to stderr
 void print_err(const char *message) {
-  printf("%s: %s", COLOR_RED "[ERROR]" STYLE_RESET, message);
+  fprintf(stderr, "%s: %s", COLOR_RED "[ERROR]" STYLE_RESET, message);
+}
+
+// Print info message
+void print_info(const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+
+  printf("%s: ", COLOR_CYAN "[INFO]" STYLE_RESET);
+  vprintf(format, args);
+  printf("\n");
+
+  va_end(args);
 }

@@ -23,6 +23,7 @@
  */
 
 #include "project.h"
+#include "services/storage.h"
 #include "utils/fmt.h"
 #include <ncurses.h>
 #include <stdbool.h>
@@ -96,6 +97,18 @@ void hash_release(arg **arguments) {
   }
 }
 
+void exec(arg **arguments, const char *path) {
+  arg *current, *tmp;
+
+  HASH_ITER(hh, *arguments, current, tmp) {
+    if (strcmp(current->name, "init") == 0) {
+      if (init(path, current->value)) {
+        print_info("Initialized todos at %s", path);
+      }
+    }
+  }
+}
+
 int main(int argc, char **argv) {
   if (argc <= 1) {
     print_err("Expect a command. See '--help' for details.");
@@ -108,6 +121,7 @@ int main(int argc, char **argv) {
   bool help = false;
   bool version = false;
   bool file = false;
+  char *file_path = "TODO.md";
   bool list = false;
   bool clear = false;
 
@@ -117,6 +131,9 @@ int main(int argc, char **argv) {
     } else if (strcmp(argv[i], "--version") == 0 ||
                strcmp(argv[i], "-v") == 0) {
       version = true;
+    } else if (strcmp(argv[i], "--file") == 0 || strcmp(argv[i], "-f") == 0) {
+      i++; // Move to next arg
+      file_path = argv[i];
     } else if (strcmp(argv[i], "init") == 0 && i < argc - 1) {
       i++; // Move to next arg
       add_argument(&arguments, argv[i - 1], argv[i]);
@@ -138,6 +155,16 @@ int main(int argc, char **argv) {
       hash_release(&arguments);
       return EXIT_FAILURE;
     }
+  }
+
+  exec(&arguments, file_path);
+
+  if (list) {
+    // TODO: list all todo
+  }
+
+  if (clear) {
+    // TODO: list all todo
   }
 
   if (help) {
