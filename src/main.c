@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <uthash.h>
+#include <utlist.h>
 
 typedef struct {
   char *name; // key
@@ -160,7 +161,13 @@ int main(int argc, char **argv) {
   exec(&arguments, file_path);
 
   if (list) {
-    // TODO: list all todo
+    struct TodoNode *head = list_todos(file_path);
+    // TODO: format table better
+    struct TodoNode *el, *tmp;
+    DL_FOREACH_SAFE(head, el, tmp) {
+      printf("%d %s %d\n", el->todo.id, el->todo.content, el->todo.is_done);
+    }
+    free_list(head);
   }
 
   if (clear) {

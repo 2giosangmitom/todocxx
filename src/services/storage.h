@@ -30,18 +30,23 @@
 
 typedef struct {
   uint32_t id;
-  char *content;
+  char content[1024];
   bool is_done;
-  char *added_date;
 } Todo;
 
-struct ListTodos {
+struct TodoNode {
   Todo todo;
-  struct ListTodos *next;
-  struct ListTodos *prev;
+  struct TodoNode *next;
+  struct TodoNode *prev;
 };
 
 // Init the TODO.md or other name if user want ._.
 bool init(const char *file_path, const char *title);
+
+// Get all todos, return the pointer to head of linked list
+struct TodoNode *list_todos(const char *file_path);
+
+// Release memory of todo list
+void free_list(struct TodoNode *head);
 
 #endif
