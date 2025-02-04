@@ -152,19 +152,21 @@ static void _ensure_newline(FILE *file) {
 }
 
 // Add todo to file
-void add_todo(const char *file_path, const char *task) {
+bool add_todo(const char *file_path, const char *task) {
   if (!_file_exist(file_path)) {
     print_err("File does not exist");
-    return;
+    return false;
   }
 
   FILE *file = fopen(file_path, "a+");
   if (!file) {
     print_err(strerror(errno));
-    return;
+    return false;
   }
 
   _ensure_newline(file);
   fprintf(file, TODO_FORMAT, ' ', task);
   fclose(file);
+
+  return true;
 }

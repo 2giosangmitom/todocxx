@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -107,7 +108,9 @@ void exec(arg **arguments, const char *path) {
         print_info("Initialized todos at %s", path);
       }
     } else if (strcmp(current->name, "add") == 0) {
-      add_todo(path, current->value);
+      if (add_todo(path, current->value)) {
+        print_info("Added '%s' task to %s", current->value, path);
+      }
     }
   }
 }
@@ -164,7 +167,7 @@ int main(int argc, char **argv) {
 
   if (list) {
     struct TodoNode *head = list_todos(file_path);
-    if (!head) {
+    if (!head && !errno) {
       print_info("No task in %s. Yeah!", file_path);
     }
     // TODO: format table better
