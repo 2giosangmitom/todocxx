@@ -50,6 +50,9 @@ struct TodoNode *list_todos(const char *file_path);
 void free_list(struct TodoNode *head);
 
 // Add todo to file
-void add_todo(const char* file_path, const char *task);
+void add_todo(const char *file_path, const char *task);
+
+// Check the file if exist
+bool _file_exist(const char *file_path);
 
 #endif

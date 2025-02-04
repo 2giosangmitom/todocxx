@@ -127,8 +127,23 @@ void free_list(struct TodoNode *head) {
   DL_FOREACH_SAFE(head, elt, tmp) { free(elt); }
 }
 
+// Check the file if exist
+bool _file_exist(const char *file_path) {
+  FILE *file = fopen(file_path, "r");
+  if (file) {
+    fclose(file);
+    return true;
+  }
+  return false;
+}
+
 // Add todo to file
 void add_todo(const char *file_path, const char *task) {
+  if (!_file_exist(file_path)) {
+    print_err(strerror(errno));
+    return;
+  }
+
   FILE *file = fopen(file_path, "a+");
   if (!file) {
     print_err(strerror(errno));
