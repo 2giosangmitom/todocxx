@@ -126,3 +126,21 @@ void free_list(struct TodoNode *head) {
   struct TodoNode *elt, *tmp;
   DL_FOREACH_SAFE(head, elt, tmp) { free(elt); }
 }
+
+// Add todo to file
+void add_todo(const char *file_path, const char *task) {
+  FILE *file = fopen(file_path, "a+");
+  if (!file) {
+    print_err(strerror(errno));
+    return;
+  }
+
+  fseek(file, -1, SEEK_END);
+  int last_char = fgetc(file);
+  if (last_char != '\n' && last_char != EOF) {
+    fputc('\n', file);
+  }
+
+  fprintf(file, "- [ ] %s\n", task);
+  fclose(file);
+}

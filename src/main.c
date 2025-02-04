@@ -106,6 +106,8 @@ void exec(arg **arguments, const char *path) {
       if (init(path, current->value)) {
         print_info("Initialized todos at %s", path);
       }
+    } else if (strcmp(current->name, "add") == 0) {
+      add_todo(path, current->value);
     }
   }
 }
@@ -162,6 +164,9 @@ int main(int argc, char **argv) {
 
   if (list) {
     struct TodoNode *head = list_todos(file_path);
+    if (!head) {
+      print_info("No task in %s. Yeah!", file_path);
+    }
     // TODO: format table better
     struct TodoNode *el, *tmp;
     DL_FOREACH_SAFE(head, el, tmp) {
@@ -171,7 +176,7 @@ int main(int argc, char **argv) {
   }
 
   if (clear) {
-    // TODO: list all todo
+    print_info("Open the file and delete all tasks :)");
   }
 
   if (help) {

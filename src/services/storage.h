@@ -49,4 +49,7 @@ struct TodoNode *list_todos(const char *file_path);
 // Release memory of todo list
 void free_list(struct TodoNode *head);
 
+// Add todo to file
+void add_todo(const char* file_path, const char *task);
+
 #endif
