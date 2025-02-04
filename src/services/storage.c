@@ -23,7 +23,7 @@
  */
 
 #include "storage.h"
-#include "../utils/fmt.h"
+
 #include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -31,7 +31,13 @@
 #include <string.h>
 #include <utlist.h>
 
-// Init the TODO.md or other name if user want ._.
+#include "../utils/fmt.h"
+
+// Constants
+#define BUFFER_SIZE 1024
+#define TODO_FORMAT "- [%c] %s\n"
+
+// Initialize the TODO.md or other name if user wants
 bool init(const char *file_path, const char *title) {
   FILE *file = fopen(file_path, "w");
   if (!file) {
@@ -63,11 +69,11 @@ struct TodoNode *list_todos(const char *file_path) {
   }
 
   struct TodoNode *res = NULL;
-  char buffer[1024];
-  int i = 0;
+  char buffer[BUFFER_SIZE];
+  int id = 0;
 
   while (fgets(buffer, sizeof(buffer), file)) {
-    buffer[strcspn(buffer, "\n")] = '\0'; // Remove newline if exist
+    buffer[strcspn(buffer, "\n")] = '\0'; // Remove newline if exists
 
     struct TodoNode *new_node =
         (struct TodoNode *)malloc(sizeof(struct TodoNode));
@@ -79,40 +85,39 @@ struct TodoNode *list_todos(const char *file_path) {
     }
 
     // Parse string
-    int j = 0;
-    while (buffer[j] == ' ') { // Skip leading spaces
-      j++;
+    int i = 0;
+    while (buffer[i] == ' ') { // Skip leading spaces
+      i++;
     }
 
-    if (buffer[j] != '-') { // Invalid format for todo in markdown
+    if (buffer[i] != '-') { // Invalid format for todo in markdown
       free(new_node);
       continue;
     }
 
     // Get status
-    j += 2;
-    if (buffer[j] != '[') {
+    i += 2;
+    if (buffer[i] != '[') {
       free(new_node);
       continue;
     }
-    j++;
-    if (buffer[j] == ' ') {
-      new_node->todo.is_done = false;
-    } else {
-      new_node->todo.is_done = true;
-    }
-    j++;
-    if (buffer[j] != ']') {
+    i++;
+    new_node->todo.is_done = (buffer[i] != ' ');
+    i++;
+    if (buffer[i] != ']') {
       free(new_node);
       continue;
     }
 
-    j++;
-    while (buffer[j] == ' ') {
-      j++;
+    i++;
+    while (buffer[i] == ' ') {
+      i++;
     }
-    strcpy(new_node->todo.content, buffer + j);
-    new_node->todo.id = ++i;
+    strncpy(new_node->todo.content, buffer + i,
+            sizeof(new_node->todo.content) - 1);
+    new_node->todo.content[sizeof(new_node->todo.content) - 1] =
+        '\0'; // Ensure null-termination
+    new_node->todo.id = ++id;
 
     DL_APPEND(res, new_node);
   }
@@ -127,8 +132,8 @@ void free_list(struct TodoNode *head) {
   DL_FOREACH_SAFE(head, elt, tmp) { free(elt); }
 }
 
-// Check the file if exist
-bool _file_exist(const char *file_path) {
+// Check if the file exists
+static bool _file_exist(const char *file_path) {
   FILE *file = fopen(file_path, "r");
   if (file) {
     fclose(file);
@@ -137,10 +142,19 @@ bool _file_exist(const char *file_path) {
   return false;
 }
 
+// Ensure the file ends with a newline
+static void _ensure_newline(FILE *file) {
+  fseek(file, -1, SEEK_END);
+  int last_char = fgetc(file);
+  if (last_char != '\n' && last_char != EOF) {
+    fputc('\n', file);
+  }
+}
+
 // Add todo to file
 void add_todo(const char *file_path, const char *task) {
   if (!_file_exist(file_path)) {
-    print_err(strerror(errno));
+    print_err("File does not exist");
     return;
   }
 
@@ -150,12 +164,7 @@ void add_todo(const char *file_path, const char *task) {
     return;
   }
 
-  fseek(file, -1, SEEK_END);
-  int last_char = fgetc(file);
-  if (last_char != '\n' && last_char != EOF) {
-    fputc('\n', file);
-  }
-
-  fprintf(file, "- [ ] %s\n", task);
+  _ensure_newline(file);
+  fprintf(file, TODO_FORMAT, ' ', task);
   fclose(file);
 }

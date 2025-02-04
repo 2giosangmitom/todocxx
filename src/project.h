@@ -23,4 +23,6 @@
  */
 
 #define PROJECT_VERSION "2.0.0"
-#define PROJECT_DESCRIPTION "A blazing-fast CLI tool to efficiently manage your TODO.md directly from the terminal"
+#define PROJECT_DESCRIPTION                                                    \
+  "A blazing-fast CLI tool to efficiently manage your TODO.md directly from "  \
+  "the terminal"
