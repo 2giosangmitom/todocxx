@@ -220,7 +220,7 @@ void print_data(int c1, char *c2, bool c3, int c1_w, int c2_w, int c3_w) {
   printf(V_LINE);
   printf(" %d%*s", c1, c1_w - get_num_digits(c1) - 1, "");
   printf(V_LINE);
-  printf(" %s%*s", c2, (int)(c2_w - strlen(c2) - 1), "");
+  printf(" %s%*s", c2, c2_w - (int)strlen(c2) - 1, "");
   printf(V_LINE);
   printf(" %s%*s",
          c3 ? COLOR_GREEN CHECK_MARK STYLE_RESET
@@ -237,8 +237,8 @@ void print_todos(struct TodoNode *head) {
 
   struct TodoNode *elt, *tmp;
   DL_FOREACH_SAFE(head, elt, tmp) {
-    c1_w = max(get_num_digits(elt->todo.id) + 2, get_num_digits(c1_w));
-    c2_w = max(get_num_digits(c2_w), strlen(elt->todo.content) + 2);
+    c1_w = max(get_num_digits(elt->todo.id) + 2, c1_w);
+    c2_w = max(c2_w, strlen(elt->todo.content) + 2);
   }
 
   // Print the top border
