@@ -1,30 +1,44 @@
 # 📝 td
 
-_td_ is a blazing-fast CLI tool to efficiently manage your TODO.md directly from the terminal. It's fast!
+**td** is a blazing-fast CLI tool to efficiently manage your `TODO.md` directly from the terminal. It's fast!
 
-## 🚀 Usage
+## 🚀 Installation
 
-```bash
-$ td --help
-A blazing-fast CLI tool to efficiently manage your TODO.md directly from the terminal
+Follow these steps to build and install the program:
 
-Usage: td [COMMAND] [ARGUMENTS] [OPTIONS]
+**Prerequisites**
 
-Commands:
-  init <title>              Create TODO.md in the current directory
-  add <task>                Add a new task to TODO.md
-  list                      Display all tasks
-  done <id>                 Mark the task with ID <id> as completed
-  remove <id>               Remove the task with ID <id>
-  clear                     Remove all tasks from TODO.md
+Make sure you have the following dependencies:
 
-Arguments:
-  <task>                    The task description (e.g., "Learn C")
-  <title>                   The heading for TODO.md (e.g., "Planned features")
-  <id>                      The task ID (e.g., the number from the task list)
+- **CMake** (version 3.10 or higher)
+- **A C compiler** (e.g., GCC or Clang)
+- **uthash** and **utlist** libraries (can be installed via your system's package manager)
 
-Options:
-  -f, --file <path>         Specify a custom TODO.md file path (defaults to TODO.md in the current directory)
-  -h, --help                Show this help message
-  -v, --version             Display the program version
-```
+**Building the Project**
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/2giosangmitom/td.git
+   cd td
+   ```
+
+2. Create the build directory and configure the project with CMake:
+
+   ```bash
+   cmake -B build
+   ```
+
+3. Build the project:
+
+   ```bash
+   cmake --build build
+   ```
+
+4. See `--help` to know how to use this tool:
+
+   ```
+   ./build/td --help
+   ```
+
+The compiled binary will be located at `build/td` (or `build/td.exe` on Windows).
