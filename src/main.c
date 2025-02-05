@@ -60,10 +60,10 @@ void print_help(char *name) {
   printf("  %-25s %s\n", "clear", "Remove all tasks from TODO.md");
 
   puts("\n" STYLE_BOLD STYLE_UNDERLINE "Arguments:" STYLE_RESET);
-  printf("  %-25s %s\n", "<task>", "The task description (e.g., \"Learn C\")");
-  printf("  %-25s %s\n", "<title>",
+  printf("  %-25s %s\n", "task", "The task description (e.g., \"Learn C\")");
+  printf("  %-25s %s\n", "title",
          "The heading for TODO.md (e.g., \"Planned features\")");
-  printf("  %-25s %s\n", "<id>",
+  printf("  %-25s %s\n", "id...",
          "The task ID (e.g., the number from the task list)");
 
   puts("\n" STYLE_BOLD STYLE_UNDERLINE "Options:" STYLE_RESET);
