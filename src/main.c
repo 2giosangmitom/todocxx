@@ -194,6 +194,79 @@ void exec(arg **arguments, const char *path) {
   }
 }
 
+int get_num_digits(int num) { return snprintf(NULL, 0, "%d", num); }
+
+int max(int n, int m) {
+  if (n < m) {
+    return m;
+  }
+  return n;
+}
+
+void print_line(char *c1, char *c2, char *c3, int c1_w, int c2_w, int c3_w) {
+  printf("%s", c1); // Left corner
+  for (int i = 0; i < c1_w; i++)
+    printf("%s", H_LINE);
+  printf("%s", c2);
+  for (int i = 0; i < c2_w; i++)
+    printf("%s", H_LINE);
+  printf("%s", c2);
+  for (int i = 0; i < c3_w; i++)
+    printf("%s", H_LINE);
+  printf("%s\n", c3); // Right corner
+}
+
+void print_data(int c1, char *c2, bool c3, int c1_w, int c2_w, int c3_w) {
+  printf(V_LINE);
+  printf(" %d%*s", c1, c1_w - get_num_digits(c1) - 1, "");
+  printf(V_LINE);
+  printf(" %s%*s", c2, (int)(c2_w - strlen(c2) - 1), "");
+  printf(V_LINE);
+  printf(" %s%*s",
+         c3 ? COLOR_GREEN CHECK_MARK STYLE_RESET
+            : COLOR_RED CROSS_MARK STYLE_RESET,
+         c3_w - 2, "");
+  printf(V_LINE);
+  printf("\n");
+}
+
+void print_todos(struct TodoNode *head) {
+  int c1_w = 3; // #
+  int c2_w = 6; // Task
+  int c3_w = 6; // Done
+
+  struct TodoNode *elt, *tmp;
+  DL_FOREACH_SAFE(head, elt, tmp) {
+    c1_w = max(get_num_digits(elt->todo.id) + 2, get_num_digits(c1_w));
+    c2_w = max(get_num_digits(c2_w), strlen(elt->todo.content) + 2);
+  }
+
+  // Print the top border
+  print_line(TOP_LEFT, TOP_MID, TOP_RIGHT, c1_w, c2_w, c3_w);
+
+  // Print heading
+  printf("%s %s", V_LINE, STYLE_BOLD "#" STYLE_RESET);
+  printf("%*s", c1_w - 2, "");
+  printf(V_LINE);
+  printf(" %s%*s", STYLE_BOLD "Task" STYLE_RESET, c2_w - 5, "");
+  printf(V_LINE);
+  printf(" %s%*s", STYLE_BOLD "Done" STYLE_RESET, c3_w - 5, "");
+  printf(V_LINE);
+  printf("\n");
+
+  // Print middle separator
+  print_line(LEFT_MID, CROSS, RIGHT_MID, c1_w, c2_w, c3_w);
+
+  // Print table data
+  DL_FOREACH_SAFE(head, elt, tmp) {
+    print_data(elt->todo.id, elt->todo.content, elt->todo.is_done, c1_w, c2_w,
+               c3_w);
+  }
+
+  // Print bottom border
+  print_line(BOTTOM_LEFT, BOTTOM_MID, BOTTOM_RIGHT, c1_w, c2_w, c3_w);
+}
+
 int main(int argc, char **argv) {
   if (argc <= 1) {
     print_err("Expect a command. See '--help' for details.");
@@ -247,13 +320,10 @@ int main(int argc, char **argv) {
     struct TodoNode *head = list_todos(file_path);
     if (!head && !errno) {
       print_info("No task in %s. Yeah!", file_path);
+    } else {
+      print_todos(head);
+      free_list(head);
     }
-    // TODO: format table better
-    struct TodoNode *el, *tmp;
-    DL_FOREACH_SAFE(head, el, tmp) {
-      printf("%d %s %d\n", el->todo.id, el->todo.content, el->todo.is_done);
-    }
-    free_list(head);
   }
 
   if (clear) {

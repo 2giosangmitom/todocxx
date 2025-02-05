@@ -50,6 +50,21 @@
 #define STYLE_UNDERLINE "\033[4m"
 #define STYLE_RESET "\033[0m" // Reset style and color
 
+// Unicode character
+#define CHECK_MARK "\xe2\x9c\x93"  // ✓
+#define CROSS_MARK "\xe2\x9c\x97"  // ✗
+#define H_LINE "\xe2\x94\x80"       // ─
+#define V_LINE "\xe2\x94\x82"       // │
+#define TOP_LEFT "\xe2\x94\x8c"     // ┌
+#define TOP_RIGHT "\xe2\x94\x90"    // ┐
+#define BOTTOM_LEFT "\xe2\x94\x94"  // └
+#define BOTTOM_RIGHT "\xe2\x94\x98" // ┘
+#define TOP_MID "\xe2\x94\xac"      // ┬
+#define BOTTOM_MID "\xe2\x94\xb4"   // ┴
+#define LEFT_MID "\xe2\x94\x9c"     // ├
+#define RIGHT_MID "\xe2\x94\xa4"    // ┤
+#define CROSS "\xe2\x94\xbc"        // ┼
+
 // Print error message to stderr
 void print_err(const char *message);
 
