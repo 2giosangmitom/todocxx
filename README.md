@@ -42,3 +42,7 @@ Make sure you have the following dependencies:
    ```
 
 The compiled binary will be located at `build/td` (or `build/td.exe` on Windows).
+
+## 🦁 Preview
+
+![preview](./assets/preview.png)
