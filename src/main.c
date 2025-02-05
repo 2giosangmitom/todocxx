@@ -320,7 +320,9 @@ int main(int argc, char **argv) {
     struct TodoNode *head = list_todos(file_path);
     if (!head && !errno) {
       print_info("No task in %s. Yeah!", file_path);
-    } else {
+    }
+
+    if (head) {
       print_todos(head);
       free_list(head);
     }
