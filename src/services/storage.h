@@ -51,12 +51,18 @@ struct TodoNode *list_todos(const char *file_path);
 void free_list(struct TodoNode *head);
 
 // Add todo to file
-bool add_todo(const char *file_path, const char *task);
+bool add_todo(const char *file_path, const char *task, bool is_done);
 
 // Check the file if exist
-static bool _file_exist(const char *file_path);
+bool _file_exist(const char *file_path);
 
 // Ensure the file ends with a newline
-static void _ensure_newline(FILE *file);
+void _ensure_newline(FILE *file);
+
+// Mark a task as done
+bool done_task(const char *file_path, int id);
+
+// Write new data to file
+bool write_todos(struct TodoNode *head, const char *file_path);
 
 #endif

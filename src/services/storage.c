@@ -47,13 +47,13 @@ bool init(const char *file_path, const char *title) {
 
   if (strlen(title) != 0) {
     fprintf(file,
-            "<!-- Modify if you want to update the content or unmark ._. "
+            "<!-- Modify if you want to update the content or uncheck ._. "
             "-->\n# %s\n\n",
             title);
   } else {
     fprintf(
         file,
-        "<!-- Modify if you want to update the content or unmark ._. -->\n");
+        "<!-- Modify if you want to update the content or uncheck ._. -->\n");
   }
 
   fclose(file);
@@ -133,7 +133,7 @@ void free_list(struct TodoNode *head) {
 }
 
 // Check if the file exists
-static bool _file_exist(const char *file_path) {
+bool _file_exist(const char *file_path) {
   FILE *file = fopen(file_path, "r");
   if (file) {
     fclose(file);
@@ -143,7 +143,7 @@ static bool _file_exist(const char *file_path) {
 }
 
 // Ensure the file ends with a newline
-static void _ensure_newline(FILE *file) {
+void _ensure_newline(FILE *file) {
   fseek(file, -1, SEEK_END);
   int last_char = fgetc(file);
   if (last_char != '\n' && last_char != EOF) {
@@ -152,7 +152,7 @@ static void _ensure_newline(FILE *file) {
 }
 
 // Add todo to file
-bool add_todo(const char *file_path, const char *task) {
+bool add_todo(const char *file_path, const char *task, bool is_done) {
   if (!_file_exist(file_path)) {
     print_err("File does not exist");
     return false;
@@ -165,8 +165,53 @@ bool add_todo(const char *file_path, const char *task) {
   }
 
   _ensure_newline(file);
-  fprintf(file, TODO_FORMAT, ' ', task);
+  fprintf(file, TODO_FORMAT, is_done ? 'x' : ' ', task);
   fclose(file);
+
+  return true;
+}
+
+// Write new data to file
+bool write_todos(struct TodoNode *head, const char *file_path) {
+  FILE *file = fopen(file_path, "r");
+  if (!file) {
+    perror("Error opening file");
+    return false;
+  }
+
+  FILE *temp = fopen("temp.md", "w");
+  if (!temp) {
+    perror("Error creating temp file");
+    fclose(file);
+    return false;
+  }
+
+  char buffer[1024];
+
+  // Copy only lines before the target line
+  while (fgets(buffer, sizeof(buffer), file)) {
+    if (buffer[0] == '-') {
+      break;
+    }
+    fputs(buffer, temp);
+  }
+
+  fclose(file);
+  fclose(temp);
+
+  remove(file_path);
+  rename("temp.md", file_path);
+
+  // If head is NULL, just return true to clear all tasks
+  if (!head) {
+    return true;
+  }
+
+  struct TodoNode *elt, *tmp;
+
+  DL_FOREACH_SAFE(head, elt, tmp) {
+    add_todo(file_path, elt->todo.content, elt->todo.is_done);
+  }
 
   return true;
 }

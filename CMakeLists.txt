@@ -21,3 +21,5 @@ add_executable(
   src/services/storage.c
   src/main.c
 )
+
+target_compile_options(td PRIVATE -Wall -Wextra)

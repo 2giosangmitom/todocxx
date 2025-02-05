@@ -22,8 +22,10 @@
  * IN THE SOFTWARE.
  */
 
+#include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <uthash.h>
@@ -71,6 +73,7 @@ void print_help(char *name) {
   printf("  %-25s %s\n", "-v, --version", "Display the program version");
 }
 
+// Add new argument to hash table
 void add_argument(arg **arguments, char *name, char *value) {
   arg *new_arg;
 
@@ -86,6 +89,7 @@ void add_argument(arg **arguments, char *name, char *value) {
   }
 }
 
+// Release hash table memory
 void hash_release(arg **arguments) {
   if (arguments == NULL) {
     return;
@@ -99,6 +103,49 @@ void hash_release(arg **arguments) {
   }
 }
 
+uint32_t *parse_ids(const char *val, int *returnSize) {
+  uint32_t *ids = NULL;
+  int count = 0;
+
+  char buffer[1024];
+  size_t j = 0;
+
+  for (size_t i = 0; i <= strlen(val); i++) {
+    if (isdigit(val[i])) {
+      continue;
+    }
+
+    if (val[i] == ',' || val[i] == '\0') {
+      if (i == j) { // Consecutive commas or empty number
+        print_err("Invalid syntax (empty number between commas).");
+        returnSize = 0;
+        free(ids);
+        return NULL;
+      }
+      size_t num_len = i - j;
+      if (num_len >= sizeof(buffer)) {
+        print_err("Number too large.");
+        returnSize = 0;
+        free(ids);
+        return NULL;
+      }
+      strncpy(buffer, val + j, num_len);
+      buffer[num_len] = '\0';
+      j = i + 1;
+      ids = realloc(ids, sizeof(int) * (count + 1));
+      ids[count++] = atoi(buffer);
+    } else {
+      print_err("Invalid character in argument.");
+      returnSize = 0;
+      free(ids);
+      return NULL;
+    }
+  }
+
+  *returnSize = count;
+  return ids;
+}
+
 void exec(arg **arguments, const char *path) {
   arg *current, *tmp;
 
@@ -108,9 +155,31 @@ void exec(arg **arguments, const char *path) {
         print_info("Initialized todos at %s", path);
       }
     } else if (strcmp(current->name, "add") == 0) {
-      if (add_todo(path, current->value)) {
+      if (add_todo(path, current->value, false)) {
         print_info("Added '%s' task to %s", current->value, path);
       }
+    } else if (strcmp(current->name, "done") == 0) {
+      char *val = current->value;
+
+      int returnSize;
+      uint32_t *ids = parse_ids(val, &returnSize);
+      struct TodoNode *todos = list_todos(path);
+      struct TodoNode *current, *tmp;
+
+      for (int i = 0; i < returnSize; i++) {
+        DL_FOREACH_SAFE(todos, current, tmp) {
+          if (current->todo.id == ids[i]) {
+            current->todo.is_done = true;
+          }
+        }
+      }
+
+      if (write_todos(todos, path)) {
+        print_info("Updated %s", path);
+      }
+
+      free_list(todos);
+      free(ids);
     }
   }
 }
@@ -126,7 +195,6 @@ int main(int argc, char **argv) {
 
   bool help = false;
   bool version = false;
-  bool file = false;
   char *file_path = "TODO.md";
   bool list = false;
   bool clear = false;
@@ -179,7 +247,9 @@ int main(int argc, char **argv) {
   }
 
   if (clear) {
-    print_info("Open the file and delete all tasks :)");
+    if (write_todos(NULL, file_path)) {
+      print_info("Updated %s", file_path);
+    }
   }
 
   if (help) {
