@@ -175,13 +175,13 @@ bool add_todo(const char *file_path, const char *task, bool is_done) {
 bool write_todos(struct TodoNode *head, const char *file_path) {
   FILE *file = fopen(file_path, "r");
   if (!file) {
-    perror("Error opening file");
+    print_err(strerror(errno));
     return false;
   }
 
   FILE *temp = fopen("temp.md", "w");
   if (!temp) {
-    perror("Error creating temp file");
+    print_err(strerror(errno));
     fclose(file);
     return false;
   }
