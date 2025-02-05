@@ -2,11 +2,58 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2025-02-05
+
+### 🚀 Features
+
+- [**breaking**] Rewrite project in C
+- Print help message
+- Add argument parser
+- Implement `init` command
+- Implement list command
+- Implement add command
+- Implement done command and clear command
+- Add remove command
+- Print todos in table format
+
+### 🐛 Bug Fixes
+
+- *(storage)* Handle empty title string
+- *(storage)* Exit if file not exist to read
+- *(storage)* Print no task info if no error
+- Check `ids` and `todos` before update todos
+- Print data only when head not null
+
+### 🚜 Refactor
+
+- Rename header files and improve error handling in storage
+- Rewrite
+
+### 📚 Documentation
+
+- Update README
+- Update README
+- Add preview
+
+### 🎨 Styling
+
+- Format code with clang-format
+
+### ⚙️ Miscellaneous Tasks
+
+- *(storage)* Add comment at the begin of file
+- Replace perror with custom print_err
+- Update help
+
 ## [1.0.2] - 2025-01-23
 
 ### 🐛 Bug Fixes
 
 - Correct filter algorithm
+
+### ⚙️ Miscellaneous Tasks
+
+- Release v1.0.2
 
 ## [1.0.1] - 2025-01-23
 
