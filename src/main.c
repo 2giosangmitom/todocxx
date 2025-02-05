@@ -28,6 +28,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <uthash.h>
 #include <utlist.h>
 
@@ -158,22 +159,27 @@ void exec(arg **arguments, const char *path) {
       if (add_todo(path, current->value, false)) {
         print_info("Added '%s' task to %s", current->value, path);
       }
-    } else if (strcmp(current->name, "done") == 0) {
+    } else { // remove or done command
       char *val = current->value;
 
       int returnSize;
       uint32_t *ids = parse_ids(val, &returnSize);
       struct TodoNode *todos = list_todos(path);
-      struct TodoNode *current, *tmp;
+      struct TodoNode *elt, *tmp;
 
       if (!ids || !todos) {
         break;
       }
 
       for (int i = 0; i < returnSize; i++) {
-        DL_FOREACH_SAFE(todos, current, tmp) {
-          if (current->todo.id == ids[i]) {
-            current->todo.is_done = true;
+        DL_FOREACH_SAFE(todos, elt, tmp) {
+          if (elt->todo.id == ids[i]) {
+            if (strcmp(current->name, "done") == 0) {
+              elt->todo.is_done = true;
+            } else {
+              DL_DELETE(todos, elt);
+              free(elt);
+            }
           }
         }
       }
