@@ -166,6 +166,10 @@ void exec(arg **arguments, const char *path) {
       struct TodoNode *todos = list_todos(path);
       struct TodoNode *current, *tmp;
 
+      if (!ids || !todos) {
+        break;
+      }
+
       for (int i = 0; i < returnSize; i++) {
         DL_FOREACH_SAFE(todos, current, tmp) {
           if (current->todo.id == ids[i]) {
