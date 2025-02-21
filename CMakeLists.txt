@@ -23,27 +23,43 @@ SOFTWARE.
 ]]
 
 cmake_minimum_required(VERSION 3.10)
-set(CMAKE_C_STANDARD 23)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Project configuration
 project(
   td
-  VERSION 2.0.0
-  DESCRIPTION "A blazing-fast CLI tool to efficiently manage your TODO.md \
-directly from the terminal"
-  LANGUAGES C
+  VERSION 3.0.0
+  DESCRIPTION "A blazing-fast CLI tool to efficiently manage your TODO.md in terminal"
+  HOMEPAGE_URL "https://github.com/2giosangmitom/td"
+  LANGUAGES CXX
 )
 
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Set compiler flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
+
+# Set output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+# Configure file
 configure_file(
-  "${CMAKE_SOURCE_DIR}/config/project.h.in"
-  "${CMAKE_SOURCE_DIR}/src/project.h"
+  ${CMAKE_CURRENT_SOURCE_DIR}/config/project.hpp.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/project.hpp
 )
 
+# Target
 add_executable(
   td
-  src/utils/fmt.c
-  src/services/storage.c
-  src/main.c
+  src/main.cc
 )
 
-target_compile_options(td PRIVATE -Wall -Wextra)
+# Link ASAN in debug mode
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_options(td PRIVATE -fsanitize=address -fno-omit-frame-pointer)
+  target_link_options(td PRIVATE -fsanitize=address)
+endif()

@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (c) 2025 Võ Quang Chiến
@@ -22,5 +22,5 @@
  * SOFTWARE.
  */
 
-#define PROJECT_VERSION "2.0.0"
-#define PROJECT_DESCRIPTION "A blazing-fast CLI tool to efficiently manage your TODO.md directly from the terminal"
+#define PROJECT_VERSION "3.0.0"
+#define PROJECT_DESCRIPTION "A blazing-fast CLI tool to efficiently manage your TODO.md in terminal"
